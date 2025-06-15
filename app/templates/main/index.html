@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="main-container">
+    <h1>English Tenses</h1>
+
+    <div class="categories-grid">
+        <!-- Present Tenses -->
+        <div class="tense-group">
+            <h2>Present Tenses</h2>
+            <div class="buttons-container">
+                <a href="{{ url_for('main.category', category_id=1) }}" class="tense-button">Present Simple</a>
+                <a href="{{ url_for('main.category', category_id=2) }}" class="tense-button">Present Continuous</a>
+                <a href="{{ url_for('main.category', category_id=3) }}" class="tense-button">Present Perfect</a>
+                <a href="{{ url_for('main.category', category_id=4) }}" class="tense-button">Present Perfect Continuous</a>
+            </div>
+        </div>
+
+        <!-- Past Tenses -->
+        <div class="tense-group">
+            <h2>Past Tenses</h2>
+            <div class="buttons-container">
+                <a href="{{ url_for('main.category', category_id=5) }}" class="tense-button">Past Simple</a>
+                <a href="{{ url_for('main.category', category_id=6) }}" class="tense-button">Past Continuous</a>
+                <a href="{{ url_for('main.category', category_id=7) }}" class="tense-button">Past Perfect</a>
+                <a href="{{ url_for('main.category', category_id=8) }}" class="tense-button">Past Perfect Continuous</a>
+            </div>
+        </div>
+
+        <!-- Future Tenses -->
+        <div class="tense-group">
+            <h2>Future Tenses</h2>
+            <div class="buttons-container">
+                <a href="{{ url_for('main.category', category_id=9) }}" class="tense-button">Future Simple</a>
+                <a href="{{ url_for('main.category', category_id=10) }}" class="tense-button">Future Continuous</a>
+                <a href="{{ url_for('main.category', category_id=11) }}" class="tense-button">Future Perfect</a>
+                <a href="{{ url_for('main.category', category_id=12) }}" class="tense-button">Future Perfect Continuous</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.main-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.categories-grid {
+    display: grid;
+    gap: 30px;
+    margin-top: 30px;
+}
+
+.tense-group {
+    background-color: rgb(40, 66, 57);
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.tense-group h2 {
+    color: #f4d897;
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+}
+
+.buttons-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.tense-button {
+    background-color: #f4d897;
+    color: #284239;
+    padding: 12px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.tense-button:hover {
+    background-color: #e8c97d;
+    transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+    .buttons-container {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}

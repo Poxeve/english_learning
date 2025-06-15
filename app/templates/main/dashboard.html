@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="dashboard-container">
+    <h1>Личный кабинет</h1>
+
+    <!-- Форма отправки решения -->
+    <div class="dashboard-section">
+        <h2>Отправить решение</h2>
+        <form class="solution-form" method="POST" action="{{ url_for('main.submit_solution') }}">
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+                {{ form.task_id.label }}
+                {{ form.task_id(class="form-control", placeholder="Введите ID задания") }}
+                {% for error in form.task_id.errors %}
+                <span class="error-message">{{ error }}</span>
+                {% endfor %}
+            </div>
+            <div class="form-group">
+                {{ form.content.label }}
+                {{ form.content(class="form-control", rows=5) }}
+                {% for error in form.content.errors %}
+                <span class="error-message">{{ error }}</span>
+                {% endfor %}
+            </div>
+            {{ form.submit(class="btn-custom") }}
+        </form>
+    </div>
+
+    <!-- Список отправленных решений -->
+    <div class="dashboard-section">
+        <h2>Мои решения</h2>
+        {% if solutions %}
+        <div class="solutions-list">
+            {% for solution in solutions %}
+            <div class="solution-item">
+                <h3>Задание №{{ solution.task.get_full_id() if solution.task else 'Удалено' }}</h3>
+                <p><strong>Задание:</strong> {{ solution.task.content if solution.task else 'Задание удалено' }}</p>
+                <p><strong>Ваше решение:</strong> {{ solution.content }}</p>
+                {% if solution.feedback %}
+                <p><strong>Ответ преподавателя:</strong> {{ solution.feedback }}</p>
+                {% endif %}
+                <p><strong>Отправлено:</strong> {{ solution.submitted_at.strftime('%d.%m.%Y %H:%M') }}</p>
+                <span class="solution-status {% if solution.is_reviewed %}status-reviewed{% else %}status-pending{% endif %}">
+                    {% if solution.is_reviewed %}Проверено{% else %}Ожидает проверки{% endif %}
+                </span>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p>Вы еще не отправляли решений.</p>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+.dashboard-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.dashboard-section {
+    background-color: rgb(40, 66, 57);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    color: rgb(244, 216, 151);
+}
+
+.solution-form {
+    margin-top: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #f4d897;
+    border-radius: 4px;
+    background-color: rgba(40, 66, 57, 0.8);
+    color: #f4d897;
+}
+
+.btn-custom {
+    background-color: #f4d897;
+    color: rgb(40, 66, 57);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-custom:hover {
+    background-color: #e8c97d;
+    transform: translateY(-2px);
+}
+
+.solutions-list {
+    margin-top: 20px;
+}
+
+.solution-item {
+    background-color: rgba(40, 66, 57, 0.8);
+    border: 1px solid #f4d897;
+    border-radius: 4px;
+    padding: 15px;
+    margin-bottom: 15px;
+}
+
+.solution-status {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    margin-top: 10px;
+}
+
+.status-reviewed {
+    background-color: #28a745;
+    color: white;
+}
+
+.status-pending {
+    background-color: #ffc107;
+    color: black;
+}
+
+.error-message {
+    color: #dc3545;
+    font-size: 0.9em;
+    margin-top: 5px;
+    display: block;
+}
+</style>
+{% endblock %}

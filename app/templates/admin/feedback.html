@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="feedback-container">
+    <h1>Оставить отзыв</h1>
+    
+    <div class="solution-info">
+        <h3>Решение от {{ student.username }}</h3>
+        <p><strong>Задача:</strong> {{ solution.task_id }}</p>
+        <div class="card">
+            <div class="card-body">
+                {{ solution.answer }}
+            </div>
+        </div>
+    </div>
+    
+    <div class="feedback-form">
+        <form method="POST">
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+                {{ form.feedback.label }}
+                {{ form.feedback(class="form-control", rows=5) }}
+            </div>
+            {{ form.submit(class="btn btn-primary") }}
+        </form>
+    </div>
+</div>
+{% endblock %}

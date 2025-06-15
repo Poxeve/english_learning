@@ -1,0 +1,27 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2 class="my-4">Добавить задачу</h2>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+
+        <div class="form-group">
+            {{ form.category_id.label(class="form-label") }}
+            {{ form.category_id(class="form-control") }}
+        </div>
+
+        <div class="form-group mt-3">
+            {{ form.task_number.label(class="form-label") }}
+            {{ form.task_number(class="form-control") }}
+        </div>
+
+        <div class="form-group mt-3">
+            {{ form.content.label(class="form-label") }}
+            {{ form.content(class="form-control", rows=5) }}
+        </div>
+
+        <button type="submit" class="btn btn-primary mt-3">Добавить</button>
+    </form>
+</div>
+{% endblock %}

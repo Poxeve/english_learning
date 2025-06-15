@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}English Learning App{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <a href="{{ url_for('main.index') }}" class="nav-logo">English Learning</a>
+            <div class="nav-right">
+                {% if current_user.is_authenticated %}
+                    {% if current_user.is_admin %}
+                        <a href="{{ url_for('admin.dashboard') }}" class="nav-button">Панель преподавателя</a>
+                    {% else %}
+                        <a href="{{ url_for('main.dashboard') }}" class="nav-button">Личный кабинет</a>
+                    {% endif %}
+                    <a href="{{ url_for('auth.logout') }}" class="nav-button">Выйти</a>
+                {% else %}
+                    <a href="{{ url_for('auth.login') }}" class="nav-button">Войти</a>
+                    <a href="{{ url_for('auth.register') }}" class="nav-button">Регистрация</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

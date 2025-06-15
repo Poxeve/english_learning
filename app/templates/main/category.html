@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 style="color: #f4d897;">{{ category.name }}</h1>
+    <p class="category-description">{{ category.description }}</p>
+
+    <div class="tasks-container mt-4">
+        {% for task in tasks %}
+        <div class="task-card">
+            <div class="task-header">
+                <span class="task-number">Задача №{{ task.get_full_id() }}</span>
+            </div>
+            <div class="task-content">
+                {{ task.content }}
+            </div>
+            {% if form %}
+            <div class="task-actions">
+                <form method="POST" action="{{ url_for('main.submit_solution') }}" class="solution-form">
+                    {{ form.csrf_token }}
+                    <input type="hidden" name="task_id" value="{{ task.id }}">
+                    <textarea name="content" class="form-control" rows="3" placeholder="Введите ваше решение..."></textarea>
+                    <button type="submit" class="btn-custom mt-2">Отправить решение</button>
+                </form>
+            </div>
+            {% elif not current_user.is_authenticated %}
+            <div class="task-actions">
+                <p class="login-prompt">Для отправки решения необходимо <a href="{{ url_for('auth.login') }}">войти</a> или <a href="{{ url_for('auth.register') }}">зарегистрироваться</a></p>
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.category-description {
+    color: #f4d897;
+    font-size: 1.2em;
+    line-height: 1.5;
+    margin: 20px 0;
+    padding: 15px;
+    background-color: rgba(40, 66, 57, 0.8);
+    border-radius: 8px;
+    border-left: 4px solid #f4d897;
+}
+
+.tasks-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 20px 0;
+}
+
+.task-card {
+    background-color: rgb(40, 66, 57);
+    border-radius: 8px;
+    padding: 15px;
+    color: rgb(244, 216, 151);
+}
+
+.task-header {
+    margin-bottom: 10px;
+}
+
+.task-number {
+    font-size: 1.1em;
+    font-weight: 500;
+}
+
+.task-content {
+    white-space: pre-line;
+    margin-bottom: 15px;
+}
+
+.task-actions {
+    margin-top: 10px;
+}
+
+.solution-form textarea {
+    width: 100%;
+    margin-bottom: 10px;
+    background-color: rgba(40, 66, 57, 0.8);
+    border: 1px solid #f4d897;
+    color: #f4d897;
+    padding: 8px;
+    border-radius: 4px;
+}
+
+.btn-custom {
+    background-color: #f4d897;
+    color: rgb(40, 66, 57);
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-custom:hover {
+    background-color: #e8c97d;
+    transform: translateY(-2px);
+}
+
+.login-prompt {
+    text-align: center;
+    margin-top: 10px;
+    font-size: 0.9em;
+}
+
+.login-prompt a {
+    color: #f4d897;
+    text-decoration: underline;
+}
+
+.login-prompt a:hover {
+    color: #e8c97d;
+}
+</style>
+{% endblock %}

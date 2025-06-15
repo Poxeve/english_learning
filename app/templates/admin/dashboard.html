@@ -1,0 +1,216 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="admin-container">
+    <h1>Панель преподавателя</h1>
+    
+    <!-- Форма добавления задания -->
+    <section class="admin-section">
+        <h2>Добавить новое задание</h2>
+        <div class="task-form-container">
+            <form method="POST" action="{{ url_for('admin.add_task') }}" class="admin-form">
+                {{ form.csrf_token }}
+                <div class="form-group">
+                    {{ form.category.label(class="form-label") }}
+                    {{ form.category(class="form-control select-category") }}
+                    {% if form.category.errors %}
+                        {% for error in form.category.errors %}
+                            <span class="error-message">{{ error }}</span>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.content.label(class="form-label") }}
+                    {{ form.content(class="form-control task-content", rows=5, placeholder="Введите текст задания...") }}
+                    {% if form.content.errors %}
+                        {% for error in form.content.errors %}
+                            <span class="error-message">{{ error }}</span>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+                <div class="form-actions">
+                    <input type="submit" value="Добавить задание" class="btn btn-primary btn-lg">
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <!-- Список заданий -->
+    <section class="admin-section">
+        <h2>Список заданий</h2>
+        <div class="tasks-table">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Категория</th>
+                        <th>Номер</th>
+                        <th>Содержание</th>
+                        <th>Дата создания</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for task in tasks %}
+                    <tr>
+                        <td>{{ task.category.name }}</td>
+                        <td>{{ task.get_full_id() }}</td>
+                        <td>{{ task.content[:100] }}...</td>
+                        <td>{{ task.created_at.strftime('%d.%m.%Y %H:%M') }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Решения студентов -->
+    <section class="admin-section">
+        <h2>Решения студентов</h2>
+        {% if solutions %}
+        <div class="solutions-list">
+            {% for solution in solutions %}
+            <div class="solution-item">
+                <div class="solution-header">
+                    <h3>Задание №{{ solution.task.get_full_id() if solution.task else 'Удалено' }}</h3>
+                    <span class="solution-status {% if solution.is_reviewed %}status-reviewed{% else %}status-pending{% endif %}">
+                        {% if solution.is_reviewed %}Проверено{% else %}Ожидает проверки{% endif %}
+                    </span>
+                </div>
+                <p><strong>Студент:</strong> {{ solution.user.username }}</p>
+                <p><strong>Задание:</strong> {{ solution.task.content if solution.task else 'Задание удалено' }}</p>
+                <p><strong>Решение:</strong> {{ solution.content }}</p>
+                <p><strong>Отправлено:</strong> {{ solution.submitted_at.strftime('%d.%m.%Y %H:%M') }}</p>
+                {% if solution.is_reviewed %}
+                <p><strong>Ваш ответ:</strong> {{ solution.feedback }}</p>
+                {% else %}
+                <form method="POST" action="{{ url_for('admin.review_solution', solution_id=solution.id) }}" class="feedback-form">
+                    {{ feedback_form.csrf_token }}
+                    <div class="form-group">
+                        {{ feedback_form.feedback.label }}
+                        {{ feedback_form.feedback(class="form-control", rows=3) }}
+                    </div>
+                    <button type="submit" class="btn-custom">Отправить ответ</button>
+                </form>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p>Нет решений для проверки.</p>
+        {% endif %}
+    </section>
+</div>
+
+<style>
+.admin-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.admin-section {
+    background-color: rgb(40, 66, 57);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    color: rgb(244, 216, 151);
+}
+
+.task-form-container {
+    margin-top: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #f4d897;
+    border-radius: 4px;
+    background-color: rgba(40, 66, 57, 0.8);
+    color: #f4d897;
+}
+
+.btn-custom {
+    background-color: #f4d897;
+    color: rgb(40, 66, 57);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-custom:hover {
+    background-color: #e8c97d;
+    transform: translateY(-2px);
+}
+
+.solutions-list {
+    margin-top: 20px;
+}
+
+.solution-item {
+    background-color: rgba(40, 66, 57, 0.8);
+    border: 1px solid #f4d897;
+    border-radius: 4px;
+    padding: 15px;
+    margin-bottom: 15px;
+}
+
+.solution-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.solution-status {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 0.9em;
+}
+
+.status-reviewed {
+    background-color: #28a745;
+    color: white;
+}
+
+.status-pending {
+    background-color: #ffc107;
+    color: black;
+}
+
+.feedback-form {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #f4d897;
+}
+
+.error-message {
+    color: #dc3545;
+    font-size: 0.9em;
+    margin-top: 5px;
+    display: block;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.table th,
+.table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #f4d897;
+}
+
+.table th {
+    font-weight: 500;
+}
+</style>
+{% endblock %} 
