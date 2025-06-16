@@ -17,7 +17,7 @@ def client(app):
     return app.test_client()
 
 def test_get_categories_empty(client):
-    """Test getting categories when none exist"""
+    """Проверка получения категорий, когда их нет"""
     response = client.get('/api/categories')
     assert response.status_code == 200
     data = json.loads(response.data)
@@ -25,7 +25,7 @@ def test_get_categories_empty(client):
     assert len(data) == 0
 
 def test_create_category(client):
-    """Test creating a new category"""
+    """Тест создания новой категории"""
     category_data = {
         'name': 'Grammar',
         'description': 'Grammar exercises'
@@ -40,8 +40,8 @@ def test_create_category(client):
     assert 'id' in data
 
 def test_create_duplicate_category(client):
-    """Test creating a category with duplicate name"""
-    # Create first category
+    """Проверьте создание категории с дублирующимся именем"""
+    # Создать первую категориюy
     category_data = {
         'name': 'Grammar',
         'description': 'Grammar exercises'
@@ -50,7 +50,7 @@ def test_create_duplicate_category(client):
                 data=json.dumps(category_data),
                 content_type='application/json')
     
-    # Try to create duplicate
+    # Попытка создать дубликат
     response = client.post('/api/categories',
                           data=json.dumps(category_data),
                           content_type='application/json')
@@ -60,8 +60,7 @@ def test_create_duplicate_category(client):
     assert 'already exists' in data['message']
 
 def test_get_category(client):
-    """Test getting a specific category"""
-    # Create a category first
+    """Тест на получение определенной категории"""
     category_data = {
         'name': 'Grammar',
         'description': 'Grammar exercises'
@@ -71,7 +70,7 @@ def test_get_category(client):
                                 content_type='application/json')
     category_id = json.loads(create_response.data)['id']
     
-    # Get the category
+    # Получить категорию
     response = client.get(f'/api/categories/{category_id}')
     assert response.status_code == 200
     data = json.loads(response.data)
@@ -79,8 +78,7 @@ def test_get_category(client):
     assert data['description'] == category_data['description']
 
 def test_update_category(client):
-    """Test updating a category"""
-    # Create a category first
+    """Тестовое обновление категории"""
     category_data = {
         'name': 'Grammar',
         'description': 'Grammar exercises'
@@ -89,8 +87,7 @@ def test_update_category(client):
                                 data=json.dumps(category_data),
                                 content_type='application/json')
     category_id = json.loads(create_response.data)['id']
-    
-    # Update the category
+
     update_data = {
         'name': 'Advanced Grammar',
         'description': 'Advanced grammar exercises'
@@ -104,8 +101,7 @@ def test_update_category(client):
     assert data['description'] == update_data['description']
 
 def test_delete_category(client):
-    """Test deleting a category"""
-    # Create a category first
+    """Тест удаления категории"""
     category_data = {
         'name': 'Grammar',
         'description': 'Grammar exercises'
@@ -115,16 +111,16 @@ def test_delete_category(client):
                                 content_type='application/json')
     category_id = json.loads(create_response.data)['id']
     
-    # Delete the category
+    # Удалить категорию
     response = client.delete(f'/api/categories/{category_id}')
     assert response.status_code == 204
     
-    # Verify it's deleted
+    # Проверка, что удалено
     get_response = client.get(f'/api/categories/{category_id}')
     assert get_response.status_code == 404
 
 def test_get_tasks_empty(client):
-    """Test getting tasks when none exist"""
+    """Проверrf получение задач, когда их нет"""
     response = client.get('/api/tasks')
     assert response.status_code == 200
     data = json.loads(response.data)
@@ -132,7 +128,7 @@ def test_get_tasks_empty(client):
     assert len(data) == 0
 
 def test_create_task(client):
-    """Test creating a new task"""
+    """Тест создания новой задачи"""
     # Create a category first
     category_data = {
         'name': 'Grammar',
@@ -142,8 +138,7 @@ def test_create_task(client):
                                          data=json.dumps(category_data),
                                          content_type='application/json')
     category_id = json.loads(create_category_response.data)['id']
-    
-    # Create a task
+
     task_data = {
         'category_id': category_id,
         'task_number': 1,
@@ -161,9 +156,9 @@ def test_create_task(client):
     assert 'full_id' in data
 
 def test_create_task_invalid_category(client):
-    """Test creating a task with invalid category"""
+    """Тест создания задачи с недопустимой категорией"""
     task_data = {
-        'category_id': 999,  # Non-existent category
+        'category_id': 999,
         'task_number': 1,
         'content': 'Complete the sentence'
     }
@@ -176,8 +171,7 @@ def test_create_task_invalid_category(client):
     assert 'not found' in data['message']
 
 def test_create_duplicate_task(client):
-    """Test creating a task with duplicate number in category"""
-    # Create a category first
+    """Тест создания задачи с повторяющимся номером в категории"""
     category_data = {
         'name': 'Grammar',
         'description': 'Grammar exercises'
@@ -186,8 +180,7 @@ def test_create_duplicate_task(client):
                                          data=json.dumps(category_data),
                                          content_type='application/json')
     category_id = json.loads(create_category_response.data)['id']
-    
-    # Create first task
+
     task_data = {
         'category_id': category_id,
         'task_number': 1,
@@ -196,8 +189,7 @@ def test_create_duplicate_task(client):
     client.post('/api/tasks',
                 data=json.dumps(task_data),
                 content_type='application/json')
-    
-    # Try to create duplicate task
+
     response = client.post('/api/tasks',
                           data=json.dumps(task_data),
                           content_type='application/json')
@@ -207,8 +199,7 @@ def test_create_duplicate_task(client):
     assert 'already exists' in data['message']
 
 def test_get_task(client):
-    """Test getting a specific task"""
-    # Create a category and task first
+    """Тест на получение конкретного задания"""
     category_data = {
         'name': 'Grammar',
         'description': 'Grammar exercises'
@@ -227,8 +218,7 @@ def test_get_task(client):
                                      data=json.dumps(task_data),
                                      content_type='application/json')
     task_id = json.loads(create_task_response.data)['id']
-    
-    # Get the task
+
     response = client.get(f'/api/tasks/{task_id}')
     assert response.status_code == 200
     data = json.loads(response.data)
@@ -237,8 +227,7 @@ def test_get_task(client):
     assert data['content'] == task_data['content']
 
 def test_update_task(client):
-    """Test updating a task"""
-    # Create a category and task first
+    """Тестовое обновление задачи"""
     category_data = {
         'name': 'Grammar',
         'description': 'Grammar exercises'
@@ -257,8 +246,7 @@ def test_update_task(client):
                                      data=json.dumps(task_data),
                                      content_type='application/json')
     task_id = json.loads(create_task_response.data)['id']
-    
-    # Update the task
+
     update_data = {
         'category_id': category_id,
         'task_number': 2,
@@ -273,8 +261,7 @@ def test_update_task(client):
     assert data['content'] == update_data['content']
 
 def test_delete_task(client):
-    """Test deleting a task"""
-    # Create a category and task first
+    """Тест удаления задачи"""
     category_data = {
         'name': 'Grammar',
         'description': 'Grammar exercises'
@@ -293,11 +280,9 @@ def test_delete_task(client):
                                      data=json.dumps(task_data),
                                      content_type='application/json')
     task_id = json.loads(create_task_response.data)['id']
-    
-    # Delete the task
+
     response = client.delete(f'/api/tasks/{task_id}')
     assert response.status_code == 204
-    
-    # Verify it's deleted
+
     get_response = client.get(f'/api/tasks/{task_id}')
     assert get_response.status_code == 404 

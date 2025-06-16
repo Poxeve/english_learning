@@ -1,5 +1,5 @@
 # Формы для административной части приложения
-from wtforms.validators import DataRequired
+from wtforms.validators import DataRequired, NumberRange, Optional, Length, ValidationError
 from flask_wtf import FlaskForm
 from wtforms import (
     StringField,
@@ -9,7 +9,6 @@ from wtforms import (
     BooleanField,
     SelectField
 )
-from wtforms.validators import DataRequired, NumberRange, Optional, Length, ValidationError
 
 class FeedbackForm(FlaskForm):
     """Форма для отправки отзыва о решении"""
@@ -36,12 +35,6 @@ class TaskForm(FlaskForm):
         except ValueError:
             raise ValidationError('Номер задания должен быть числом')
 
-class CategoryForm(FlaskForm):
-    """Форма для создания и редактирования категорий заданий"""
-    name = StringField('Name', validators=[DataRequired()])
-    description = TextAreaField('Description', validators=[DataRequired()])
-    is_active = BooleanField('Active', default=True, validators=[Optional()])
-    submit = SubmitField('Create Category')
 
     class FeedbackForm(FlaskForm):
         feedback = TextAreaField('Your comment', validators=[DataRequired()])

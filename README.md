@@ -78,7 +78,7 @@ pip install -r requirements.txt
 
 4. Создайте базу данных:
 ```bash
-python create_db.py
+python create_sample_tasks.py
 ```
 
 5. Запустите приложение:
@@ -119,7 +119,7 @@ english_learning_app/
 │   └── test_main.py
 ├── .env
 ├── config.py
-├── create_db.py
+├── create_sample_tasks.py
 ├── requirements.txt
 └── README.md
 ```

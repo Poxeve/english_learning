@@ -2,16 +2,15 @@ from flask_restful import Resource, Api, reqparse
 from app.models import TaskCategory, Task
 from app import db
 
-# Initialize API
 api = Api()
 
-# Parser for task creation/updates
+""" Парсер для создания/обновления задач """
 task_parser = reqparse.RequestParser()
 task_parser.add_argument('category_id', type=int, required=True, help='Category ID is required')
 task_parser.add_argument('task_number', type=int, required=True, help='Task number is required')
 task_parser.add_argument('content', type=str, required=True, help='Task content is required')
 
-# Parser for category creation/updates
+""" Парсер для создания/обновления категорий """
 category_parser = reqparse.RequestParser()
 category_parser.add_argument('name', type=str, required=True, help='Category name is required')
 category_parser.add_argument('description', type=str, required=False)
@@ -19,15 +18,15 @@ category_parser.add_argument('description', type=str, required=False)
 class CategoryResource(Resource):
     def get(self, category_id=None):
         if category_id is None:
-            # Get all categories
+            """ Получить все категории """
             categories = TaskCategory.query.all()
             return [{
                 'id': cat.id,
                 'name': cat.name,
                 'description': cat.description
             } for cat in categories]
-        
-        # Get specific category
+
+        """ Получить определенную категорию """
         category = db.session.get(TaskCategory, category_id)
         if category is None:
             return {'message': 'Category not found'}, 404
@@ -40,7 +39,7 @@ class CategoryResource(Resource):
     def post(self):
         args = category_parser.parse_args()
         
-        # Check if category with this name already exists
+        """ Проверка, существует ли уже категория с таким названием """
         if TaskCategory.query.filter_by(name=args['name']).first():
             return {'message': 'Category with this name already exists'}, 400
         
@@ -65,7 +64,7 @@ class CategoryResource(Resource):
             
         args = category_parser.parse_args()
         
-        # Check if new name conflicts with existing category
+        """ Проверка, не конфликтует ли новое имя с существующей категорией """
         existing = TaskCategory.query.filter_by(name=args['name']).first()
         if existing and existing.id != category_id:
             return {'message': 'Category with this name already exists'}, 400
@@ -93,7 +92,7 @@ class CategoryResource(Resource):
 class TaskResource(Resource):
     def get(self, task_id=None):
         if task_id is None:
-            # Get all tasks
+            """ Получение всех заданий """
             tasks = Task.query.all()
             return [{
                 'id': task.id,
@@ -104,7 +103,7 @@ class TaskResource(Resource):
                 'full_id': task.get_full_id()
             } for task in tasks]
         
-        # Get specific task
+        """ Получение определенного задания """
         task = db.session.get(Task, task_id)
         if task is None:
             return {'message': 'Task not found'}, 404
@@ -121,12 +120,12 @@ class TaskResource(Resource):
     def post(self):
         args = task_parser.parse_args()
         
-        # Check if category exists
+        """ Проверка, существует ли категория """
         category = db.session.get(TaskCategory, args['category_id'])
         if category is None:
             return {'message': 'Category not found'}, 404
-        
-        # Check if task with this number in category already exists
+
+        """ Проверка, существует ли уже задача с таким номером в категории """
         if Task.query.filter_by(
             category_id=args['category_id'],
             task_number=args['task_number']
@@ -157,13 +156,13 @@ class TaskResource(Resource):
             return {'message': 'Task not found'}, 404
             
         args = task_parser.parse_args()
-        
-        # Check if category exists
+
+        """ Проверка, существует ли категория """
         category = db.session.get(TaskCategory, args['category_id'])
         if category is None:
             return {'message': 'Category not found'}, 404
-        
-        # Check if new task number conflicts with existing task in category
+
+        """ Проверка, не конфликтует ли номер новой задачи с существующей задачей в категории """
         existing = Task.query.filter_by(
             category_id=args['category_id'],
             task_number=args['task_number']
@@ -195,6 +194,5 @@ class TaskResource(Resource):
         db.session.commit()
         return '', 204
 
-# Register resources
 api.add_resource(CategoryResource, '/api/categories', '/api/categories/<int:category_id>')
 api.add_resource(TaskResource, '/api/tasks', '/api/tasks/<int:task_id>') 

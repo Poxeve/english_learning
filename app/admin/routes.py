@@ -129,7 +129,7 @@ def add_task():
     
     if form.validate_on_submit():
         try:
-            # Находим последний номер задания в выбранной категории
+            # Последний номер задания в выбранной категории
             last_task = Task.query.filter_by(category_id=form.category.data).order_by(Task.task_number.desc()).first()
             next_task_number = 1 if last_task is None else last_task.task_number + 1
             
